@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <!-- Viewport meta tag for responsiveness - Already present and correctly configured -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نموذج تشييك المؤجرين</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- html2pdf.js CDN for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Light gray background */
+        }
+        /* Custom styles for better visual appeal, leveraging Tailwind where possible */
+        .card {
+            background-color: #ffffff;
+            border-radius: 1rem; /* Rounded corners */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08); /* Soft shadow */
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .section-heading {
+            font-size: 1.75rem; /* Equivalent to text-3xl */
+            font-weight: 700; /* Equivalent to font-bold */
+            color: #80276C; /* Brand Color: Dark Purple */
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+        .sub-heading {
+            font-size: 1.25rem; /* Equivalent to text-xl */
+            font-weight: 600; /* Equivalent to font-semibold */
+            color: #A51890; /* Brand Color: Medium Purple */
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #BB16A3; /* Brand Color: Lighter Purple for border */
+            padding-bottom: 0.5rem;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+            color: #4b5563; /* Text color - keep subtle */
+        }
+        .checkbox-item input[type="checkbox"] {
+            margin-left: 0.75rem; /* Right margin for RTL */
+            width: 1.25rem; /* Larger checkbox */
+            height: 1.25rem;
+            border-radius: 0.25rem;
+            accent-color: #FA4616; /* Brand Color: Orange-Red for checkbox accent */
+        }
+        textarea, input[type="text"], input[type="number"], input[type="email"], select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db; /* Light border */
+            border-radius: 0.5rem; /* Rounded corners */
+            background-color: #f9fafb; /* Slightly darker background for input fields */
+            color: #1f2937;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+            appearance: none; /* Remove default browser styling for select */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='currentColor'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z' clip-rule='evenodd'%3E%3C/path%3E%3C/svg%3E"); /* Custom dropdown arrow */
+            background-repeat: no-repeat;
+            background-position: left 0.75rem center; /* Position arrow to the left for RTL */
+            background-size: 1.25rem;
+        }
+        textarea:focus, input[type="text"]:focus, input[type="number"]:focus, input[type="email"]:focus, select:focus {
+            outline: none;
+            border-color: #FA4616; /* Brand Color: Orange-Red focus border */
+            box-shadow: 0 0 0 3px rgba(250, 70, 22, 0.25); /* Shadow using brand color */
+        }
+        .table-container {
+            overflow-x: auto; /* Allow horizontal scrolling on small screens */
+        }
+        table {
+            width: 100%;
+            border-collapse: separate; /* Use separate to apply border-radius to cells */
+            border-spacing: 0;
+            margin-top: 1rem;
+            background-color: #ffffff;
+            border-radius: 0.75rem; /* Rounded table corners */
+            overflow: hidden; /* Hide overflow from rounded corners */
+        }
+        th, td {
+            padding: 1rem;
+            text-align: right; /* Right align text for RTL */
+            border-bottom: 1px solid #e5e7eb; /* Light gray border */
+            color: #374151;
+            font-size: 0.9rem;
+        }
+        th {
+            background-color: #BB16A3; /* Brand Color: Lighter Purple for header background */
+            font-weight: 600;
+            color: #FFFFFF; /* White text for contrast */
+            border-bottom: 2px solid #A51890; /* Stronger border using Medium Purple */
+        }
+        tr:last-child td {
+            border-bottom: none; /* No border for last row */
+        }
+        .button {
+            padding: 0.8rem 1.5rem;
+            border-radius: 0.75rem; /* More rounded */
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .button-primary {
+            background-color: #FA4616; /* Brand Color: Orange-Red */
+            color: #ffffff;
+        }
+        .button-primary:hover {
+            background-color: #E03F12; /* Darker shade of Orange-Red on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        .button-secondary {
+            background-color: #FFA300; /* Brand Color: Orange */
+            color: #ffffff;
+        }
+        .button-secondary:hover {
+            background-color: #E69500; /* Darker shade of Orange on hover */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        .icon {
+            width: 1.5rem;
+            height: 1.5rem;
+            margin-left: 0.5rem; /* Space to the right of the icon */
+            flex-shrink: 0; /* Prevent icon from shrinking */
+        }
+        /* Responsive adjustments */
+        @media (min-width: 640px) { /* Small screens and up */
+            .main-container {
+                padding: 2rem;
+            }
+            .card {
+                padding: 2rem;
+            }
+        }
+        @media (min-width: 768px) { /* Medium screens and up */
+            .main-container {
+                max-width: 900px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .section-heading {
+                font-size: 2rem;
+            }
+        }
+        /* Style for file input container */
+        .file-input-container {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            width: 100%; /* Ensure it fits cell width */
+        }
+
+        .file-input-container input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-input-button {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            background-color: #f9fafb;
+            color: #1f2937;
+            font-size: 0.9rem;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
+        }
+
+        .file-input-button:hover {
+            background-color: #edf2f7; /* Lighten on hover */
+        }
+
+        /* Signature Pad specific styles */
+        #signatureCanvas {
+            border: 2px solid #BB16A3; /* Brand color border for canvas */
+            border-radius: 0.5rem;
+            background-color: #ffffff;
+            touch-action: none; /* Prevent scrolling/zooming on canvas for better drawing */
+            width: 100%; /* Make canvas responsive */
+            height: 200px; /* Fixed height for signature area */
+            max-width: 100%;
+        }
+    </style>
+</head>
+<body class="font-inter">
+    <div class="main-container min-h-screen p-4 sm:p-6 md:p-8">
+        <!-- Header Section -->
+        <header class="text-center mb-8">
+            <!-- Company Logo - Placeholder with a blend of brand colors -->
+            <img src="https://placehold.co/150x60/80276C/FFA300?text=شعار+شركتك" alt="شعار الشركة" class="mx-auto mb-4 rounded-lg shadow-md">
+            <h1 class="section-heading text-4xl">نموذج تشييك المؤجرين اليومي</h1>
+        </header>
+
+        <!-- Date and Time Display Section -->
+        <section class="card">
+            <h2 class="sub-heading text-center">تاريخ ووقت التقرير</h2>
+            <div class="space-y-4 text-center">
+                <div>
+                    <label class="block text-gray-700 text-sm font-medium mb-2">وقت وتاريخ بداية التقرير:</label>
+                    <div id="report-start-time" class="text-xl font-bold text-gray-800 p-2 rounded-md bg-gray-50 border border-gray-200">
+                        <!-- Start date and time will be inserted here by JavaScript -->
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-gray-700 text-sm font-medium mb-2">وقت وتاريخ انتهاء التقرير:</label>
+                    <div id="report-end-time-display" class="text-xl font-bold text-gray-800 p-2 rounded-md bg-gray-50 border border-gray-200 min-h-[44px]">
+                        <!-- End date and time will be inserted here by JavaScript -->
+                    </div>
+                    <button type="button" class="button button-secondary mt-2 text-sm" onclick="setEndTime()">تسجيل وقت الانتهاء</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Employee and Branch Data Section -->
+        <section class="card">
+            <h2 class="sub-heading">بيانات الموظف والفرع</h2>
+            <div class="space-y-4">
+                <div>
+                    <label for="employee-id" class="block text-gray-700 text-sm font-medium mb-2">الرقم الوظيفي:</label>
+                    <input type="text" id="employee-id" class="w-full rounded-md" placeholder="أدخل الرقم الوظيفي">
+                </div>
+                <div>
+                    <label for="employee-name-input" class="block text-gray-700 text-sm font-medium mb-2">اسم الموظف:</label>
+                    <input type="text" id="employee-name-input" class="w-full rounded-md" placeholder="أدخل اسم الموظف كاملاً">
+                </div>
+                <div>
+                    <label for="branch-name-input" class="block text-gray-700 text-sm font-medium mb-2">اسم الفرع:</label>
+                    <input type="text" id="branch-name-input" class="w-full rounded-md" placeholder="أدخل اسم الفرع">
+                </div>
+                <div>
+                    <label for="employee-email" class="block text-gray-700 text-sm font-medium mb-2">البريد الإلكتروني:</label>
+                    <input type="email" id="employee-email" class="w-full rounded-md" placeholder="أدخل البريد الإلكتروني للموظف">
+                </div>
+            </div>
+        </section>
+
+        <!-- Branch Cleanliness Section -->
+        <section class="card" id="branch-cleanliness-section">
+            <h2 class="sub-heading">نظافة الفرع والمرافق (التشييك على مهام العامل اليومية)</h2>
+            <div class="space-y-3 mb-6">
+                <label class="checkbox-item">
+                    <input type="checkbox" class="form-checkbox" data-static-text="نظافة المدخل والرصيف: تم التشييك" data-static-unchecked="نظافة المدخل والرصيف: لم يتم التشييك">
+                    <span>نظافة المدخل والرصيف</span>
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" class="form-checkbox" data-static-text="نظافة اللوحات الخارجية: تم التشييك" data-static-unchecked="نظافة اللوحات الخارجية: لم يتم التشييك">
+                    <span>نظافة اللوحات الخارجية</span>
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" class="form-checkbox" data-static-text="نظافة أرضية الفرع الداخلية: تم التشييك" data-static-unchecked="نظافة أرضية الفرع الداخلية: لم يتم التشييك">
+                    <span>نظافة أرضية الفرع الداخلية</span>
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" class="form-checkbox" data-static-text="نظافة الحمام: تم التشييك" data-static-unchecked="نظافة الحمام: لم يتم التشييك">
+                    <span>نظافة الحمام</span>
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" class="form-checkbox" data-static-text="جميع اللمبات تعمل بشكل جيد: تم التشييك" data-static-unchecked="جميع اللمبات تعمل بشكل جيد: لم يتم التشييك">
+                    <span>جميع اللمبات تعمل بشكل جيد</span>
+                </label>
+            </div>
+            
+            <div class="mt-6">
+                <label for="branch-overall-notes" class="block text-gray-700 text-sm font-medium mb-2">ملاحظات عامة على الفرع:</label>
+                <textarea id="branch-overall-notes" rows="3" class="w-full"></textarea>
+            </div>
+        </section>
+
+        <!-- Car Cleanliness Section -->
+        <section class="card" id="car-cleanliness-section">
+            <h2 class="sub-heading">تشييك نظافة السيارة (التشييك على نظافة السيارات)</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Inner/Outer Cleanliness with Icons -->
+                <div>
+                    <h3 class="font-semibold text-gray-700 mb-2">نظافة السيارة (الداخل والخارج):</h3>
+                    <div class="space-y-3">
+                        <label class="checkbox-item">
+                            <input type="checkbox" class="form-checkbox" data-static-text="نظافة السيارة من الخارج (جسم، نوافذ، إطارات): تم التشييك" data-static-unchecked="نظافة السيارة من الخارج (جسم، نوافذ، إطارات): لم يتم التشييك">
+                            <!-- [Image of a car] -->
+                            <img src="https://placehold.co/24x24/FA4616/FFFFFF?text=🚗" alt="أيقونة سيارة" class="icon">
+                            <span>نظافة السيارة من الخارج (جسم، نوافذ، إطارات)</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" class="form-checkbox" data-static-text="نظافة المقاعد والأرضيات: تم التشييك" data-static-unchecked="نظافة المقاعد والأرضيات: لم يتم التشييك">
+                            <!-- [Image of a couch] -->
+                            <img src="https://placehold.co/24x24/FA4616/FFFFFF?text=🛋️" alt="أيقونة مقعد" class="icon">
+                            <span>نظافة المقاعد والأرضيات</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" class="form-checkbox" data-static-text="نظافة لوحة القيادة والكونسول الوسطي: تم التشييك" data-static-unchecked="نظافة لوحة القيادة والكونسول الوسطي: لم يتم التشييك">
+                            <!-- [Image of a dial] -->
+                            <img src="https://placehold.co/24x24/FA4616/FFFFFF?text=🎛️" alt="أيقونة لوحة تحكم" class="icon">
+                            <span>نظافة لوحة القيادة والكونسول الوسطي</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" class="form-checkbox" data-static-text="نظافة مقابض الأبواب الداخلية والخارجية: تم التشييك" data-static-unchecked="نظافة مقابض الأبواب الداخلية والخارجية: لم يتم التشييك">
+                            <!-- [Image of a door] -->
+                            <img src="https://placehold.co/24x24/FA4616/FFFFFF?text=🚪" alt="أيقونة مقبض باب" class="icon">
+                            <span>نظافة مقابض الأبواب الداخلية والخارجية</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" class="form-checkbox" data-static-text="نظافة حاملات الأكواب والأماكن التي يصعب الوصول لها: تم التشييك" data-static-unchecked="نظافة حاملات الأكواب والأماكن التي يصعب الوصول لها: لم يتم التشييك">
+                            <!-- [Image of a cup] -->
+                            <img src="https://placehold.co/24x24/FA4616/FFFFFF?text=🥤" alt="أيقونة حامل أكواب" class="icon">
+                            <span>نظافة حاملات الأكواب والأماكن التي يصعب الوصول لها</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" class="form-checkbox" data-static-text="خلو السيارة من أي روائح غير مرغوبة: تم التشييك" data-static-unchecked="خلو السيارة من أي روائح غير مرغوبة: لم يتم التشييك">
+                            <!-- [Image of a gust of air] -->
+                            <img src="https://placehold.co/24x24/FA4616/FFFFFF?text=💨" alt="أيقونة هواء" class="icon">
+                            <span>خلو السيارة من أي روائح غير مرغوبة</span>
+                        </label>
+                    </div>
+                </div>
+                <!-- Other Checkpoints -->
+                <div>
+                    <h3 class="font-semibold text-gray-700 mb-2">العدة الأساسية:</h3>
+                    <div class="space-y-3">
+                        <label class="checkbox-item">
+                            <input type="checkbox" class="form-checkbox" data-static-text="التأكد من وجود الكفر الاحتياطي بحالة جيدة: تم التشييك" data-static-unchecked="التأكد من وجود الكفر الاحتياطي بحالة جيدة: لم يتم التشييك">
+                            <span>التأكد من وجود الكفر الاحتياطي بحالة جيدة</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" class="form-checkbox" data-static-text="التأكد من وجود العفريتة ومعداتها: تم التشييك" data-static-unchecked="التأكد من وجود العفريتة ومعداتها: لم يتم التشييك">
+                            <span>التأكد من وجود العفريتة ومعداتها</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" class="form-checkbox" data-static-text="التأكد من وجود شنطة الإسعافات الأولية (صالحة الاستخدام): تم التشييك" data-static-unchecked="التأكد من وجود شنطة الإسعافات الأولية (صالحة الاستخدام): لم يتم التشييك">
+                            <span>التأكد من وجود شنطة الإسعافات الأولية (صالحة الاستخدام)</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" class="form-checkbox" data-static-text="التأكد من تشغيل جميع السيارات الجاهزة بالفرع يومياً: تم التشييك" data-static-unchecked="التأكد من تشغيل جميع السيارات الجاهزة بالفرع يومياً: لم يتم التشييك">
+                            <span>التأكد من تشغيل جميع السيارات الجاهزة بالفرع يومياً</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6">
+                <label for="car-notes" class="block text-gray-700 text-sm font-medium mb-2">ملاحظات على نظافة السيارة:</label>
+                <textarea id="car-notes" rows="4" class="w-full"></textarea>
+            </div>
+        </section>
+
+        <!-- Worker Performance Section -->
+        <section class="card">
+            <h2 class="sub-heading">تقييم أداء العاملين</h2>
+            <div class="bg-gray-50 p-4 rounded-lg mb-6" id="worker-performance-section">
+                <h4 class="text-md font-medium text-gray-700 mb-3">أداء العامل (العمال)</h4>
+                <div class="flex flex-wrap items-end gap-4">
+                    <div class="flex-grow min-w-[150px]">
+                        <label for="worker-name-input" class="block text-gray-700 text-sm font-medium mb-1">اسم العامل:</label>
+                        <input type="text" id="worker-name-input" class="w-full" placeholder="اسم العامل">
+                    </div>
+                    <div class="flex-grow min-w-[150px]">
+                        <span class="block text-gray-700 text-sm font-medium mb-1">الالتزام بالزي:</span>
+                        <div class="flex items-center space-x-4 space-x-reverse mt-1">
+                            <label class="inline-flex items-center">
+                                <input type="radio" class="form-radio" name="worker-uniform" value="نعم">
+                                <span class="ml-2">نعم</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="radio" class="form-radio" name="worker-uniform" value="لا">
+                                <span class="ml-2">لا</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="flex-grow min-w-[150px]">
+                        <label for="worker-performance-eval" class="block text-gray-700 text-sm font-medium mb-1">التقييم اليومي:</label>
+                        <select id="worker-performance-eval" class="w-full">
+                            <option value="">اختر التقييم</option>
+                            <option value="ممتاز">ممتاز</option>
+                            <option value="جيد جداً">جيد جداً</option>
+                            <option value="جيد">جيد</option>
+                            <option value="مقبول">مقبول</option>
+                            <option value="ضعيف">ضعيف</option>
+                        </select>
+                    </div>
+                    <div class="flex-grow-[2] min-w-[200px]"> <!-- Doubled flex-grow for notes -->
+                        <label for="worker-notes" class="block text-gray-700 text-sm font-medium mb-1">ملاحظات:</label>
+                        <textarea id="worker-notes" rows="1" class="w-full"></textarea>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Car Summary Section -->
+        <section class="card">
+            <h2 class="sub-heading">ملخص عدد السيارات بالفرع</h2>
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-4 text-center">
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <p class="text-gray-700 font-semibold text-lg">الأسطول</p>
+                    <p id="summary-total-fleet-count" class="text-2xl font-bold text-gray-900 mt-1">0</p>
+                </div>
+                <div class="p-3 bg-blue-50 rounded-lg">
+                    <p class="text-blue-700 font-semibold text-lg">مؤجر</p>
+                    <input type="number" id="summary-rented-count-input" class="w-full text-center text-2xl font-bold text-blue-900 mt-1 p-0 bg-transparent border-none focus:outline-none" value="0" oninput="updateCarSummary()">
+                </div>
+                <div class="p-3 bg-green-50 rounded-lg">
+                    <p class="text-green-700 font-semibold text-lg">جاهز</p>
+                    <p id="summary-ready-count" class="text-2xl font-bold text-green-900 mt-1">0</p>
+                </div>
+                <div class="p-3 bg-red-50 rounded-lg">
+                    <p class="text-red-700 font-semibold text-lg">خارج الخدمة بالفرع</p>
+                    <p id="summary-out-of-service-count" class="text-2xl font-bold text-red-900 mt-1">0</p>
+                </div>
+                 <div class="p-3 bg-yellow-50 rounded-lg">
+                    <p class="text-yellow-700 font-semibold text-lg">حوادث خلال اليوم</p>
+                    <input type="number" id="summary-accidents-count-input" class="w-full text-center text-2xl font-bold text-yellow-900 mt-1 p-0 bg-transparent border-none focus:outline-none" value="0" oninput="updateCarSummary()">
+                </div>
+            </div>
+        </section>
+
+        <!-- Fleet Inventory and Readiness Section -->
+        <section class="card">
+            <h2 class="sub-heading">جرد وجاهزية السيارات بالفرع</h2>
+            <div class="table-container">
+                <table id="carInventoryTable">
+                    <thead>
+                        <tr>
+                            <th>نوع السيارة</th>
+                            <th>عداد الكيلو</th>
+                            <th>حالة السيارة</th>
+                            <th>ملفات مرفقة</th>
+                            <th>ملاحظات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Existing rows - keep them as examples -->
+                        <tr class="car-row">
+                            <td>
+                                <select class="w-full bg-transparent border-none focus:ring-0 p-0 text-center" onchange="updateCarSummary()">
+                                    <option value="">اختر نوع السيارة</option>
+                                    <option value="مرسيدس C-Class">مرسيدس C-Class</option>
+                                    <option value="تويوتا كامري">تويوتا كامري</option>
+                                    <option value="هيونداي إلنترا">هيونداي إلنترا</option>
+                                    <option value="فورد موستنج">فورد موستنج</option>
+                                    <option value="نيسان صني">نيسان صني</option>
+                                    <option value="شفروليه ماليبو">شفروليه ماليبو</option>
+                                    <option value="هوندا سيفيك">هوندا سيفيك</option>
+                                    <option value="مازدا 3">مازدا 3</option>
+                                    <option value="بي ام دبليو الفئة الخامسة">بي ام دبليو الفئة الخامسة</option>
+                                </select>
+                            </td>
+                            <td><input type="number" class="w-full bg-transparent border-none focus:ring-0 p-0 text-center" placeholder="عداد الكيلو" oninput="updateCarSummary()"></td>
+                            <td>
+                                <select class="w-full bg-transparent border-none focus:ring-0 p-0 text-center" onchange="updateCarSummary()">
+                                    <option value="">اختر الحالة</option>
+                                    <option value="جاهز">جاهز</option>
+                                    <option value="رائحة دخان">رائحة دخان</option>
+                                    <option value="بها خدوش">بها خدوش</option>
+                                    <option value="تحتاج لصيانة">تحتاج لصيانة</option>
+                                    <option value="إطار تالف">إطار تالف</option>
+                                    <option value="زيت منخفض">زيت منخفض</option>
+                                    <option value="نظيفة جداً">نظيفة جداً</option>
+                                    <option value="متوسطة النظافة">متوسطة النظافة</option>
+                                    <option value="تلف داخلي">تلف داخلي</option>
+                                </select>
+                            </td>
+                            <td>
+                                <label class="file-input-container">
+                                    <input type="file" accept="image/*,video/*" multiple onchange="displayFileName(this)">
+                                    <span class="file-input-button">رفع/تصوير ملف (صور/فيديو)</span>
+                                </label>
+                            </td>
+                            <td><input type="text" class="w-full bg-transparent border-none focus:ring-0 p-0" placeholder="اكتب ملاحظات..."></td>
+                        </tr>
+                        <tr class="car-row">
+                            <td>
+                                <select class="w-full bg-transparent border-none focus:ring-0 p-0 text-center" onchange="updateCarSummary()">
+                                    <option value="">اختر نوع السيارة</option>
+                                    <option value="مرسيدس C-Class">مرسيدس C-Class</option>
+                                    <option value="تويوتا كامري">تويوتا كامري</option>
+                                    <option value="هيونداي إلنترا">هيونداي إلنترا</option>
+                                    <option value="فورد موستنج">فورد موستنج</option>
+                                    <option value="نيسان صني">نيسان صني</option>
+                                    <option value="شفروليه ماليبو">شفروليه ماليبو</option>
+                                    <option value="هوندا سيفيك">هوندا سيفيك</option>
+                                    <option value="مازدا 3">مازدا 3</option>
+                                    <option value="بي ام دبليو الفئة الخامسة">بي ام دبليو الفئة الخامسة</option>
+                                </select>
+                            </td>
+                            <td><input type="number" class="w-full bg-transparent border-none focus:ring-0 p-0 text-center" placeholder="عداد الكيلو" oninput="updateCarSummary()"></td>
+                            <td>
+                                <select class="w-full bg-transparent border-none focus:ring-0 p-0 text-center" onchange="updateCarSummary()">
+                                    <option value="">اختر الحالة</option>
+                                    <option value="جاهز">جاهز</option>
+                                    <option value="رائحة دخان">رائحة دخان</option>
+                                    <option value="بها خدوش">بها خدوش</option>
+                                    <option value="تحتاج لصيانة">تحتاج لصيانة</option>
+                                    <option value="إطار تالف">إطار تالف</option>
+                                    <option value="زيت منخفض">زيت منخفض</option>
+                                    <option value="نظيفة جداً">نظيفة جداً</option>
+                                    <option value="متوسطة النظافة">متوسطة النظافة</option>
+                                    <option value="تلف داخلي">تلف داخلي</option>
+                                </select>
+                            </td>
+                            <td>
+                                <label class="file-input-container">
+                                    <input type="file" accept="image/*,video/*" multiple onchange="displayFileName(this)">
+                                    <span class="file-input-button">رفع/تصوير ملف (صور/فيديو)</span>
+                                </label>
+                            </td>
+                            <td><input type="text" class="w-full bg-transparent border-none focus:ring-0 p-0" placeholder="اكتب ملاحظات..."></td>
+                        </tr>
+                        <tr class="car-row">
+                            <td>
+                                <select class="w-full bg-transparent border-none focus:ring-0 p-0 text-center" onchange="updateCarSummary()">
+                                    <option value="">اختر نوع السيارة</option>
+                                    <option value="مرسيدس C-Class">مرسيدس C-Class</option>
+                                    <option value="تويوتا كامري">تويوتا كامري</option>
+                                    <option value="هيونداي إلنترا">هيونداي إلنترا</option>
+                                    <option value="فورد موستنج">فورد موستنج</option>
+                                    <option value="نيسان صني">نيسان صني</option>
+                                    <option value="شفروليه ماليبو">شفروليه ماليبو</option>
+                                    <option value="هوندا سيفيك">هوندا سيفيك</option>
+                                    <option value="مازدا 3">مازدا 3</option>
+                                    <option value="بي ام دبليو الفئة الخامسة">بي ام دبليو الفئة الخامسة</option>
+                                </select>
+                            </td>
+                            <td><input type="number" class="w-full bg-transparent border-none focus:ring-0 p-0 text-center" placeholder="عداد الكيلو" oninput="updateCarSummary()"></td>
+                            <td>
+                                <select class="w-full bg-transparent border-none focus:ring-0 p-0 text-center" onchange="updateCarSummary()">
+                                    <option value="">اختر الحالة</option>
+                                    <option value="جاهز">جاهز</option>
+                                    <option value="رائحة دخان">رائحة دخان</option>
+                                    <option value="بها خدوش">بها خدوش</option>
+                                    <option value="تحتاج لصيانة">تحتاج لصيانة</option>
+                                    <option value="إطار تالف">إطار تالف</option>
+                                    <option value="زيت منخفض">زيت منخفض</option>
+                                    <option value="نظيفة جداً">نظيفة جداً</option>
+                                    <option value="متوسطة النظافة">متوسطة النظافة</option>
+                                    <option value="تلف داخلي">تلف داخلي</option>
+                                </select>
+                            </td>
+                            <td>
+                                <label class="file-input-container">
+                                    <input type="file" accept="image/*,video/*" multiple onchange="displayFileName(this)">
+                                    <span class="file-input-button">رفع/تصوير ملف (صور/فيديو)</span>
+                                </label>
+                            </td>
+                            <td><input type="text" class="w-full bg-transparent border-none focus:ring-0 p-0" placeholder="اكتب ملاحظات..."></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Button to add new car entry -->
+            <div class="mt-4 text-center">
+                <button type="button" class="button button-primary" onclick="addNewCarRow()">إضافة سيارة جديدة</button>
+            </div>
+        </section>
+
+        <!-- Contracts and Revenue Section -->
+        <section class="card">
+            <h2 class="sub-heading">البيانات المالية والتشغيلية اليومية</h2>
+            <div class="table-container">
+                <table id="contractsRevenueTable">
+                    <thead>
+                        <tr>
+                            <th>البيان</th>
+                            <th colspan="2" class="text-center">العدد/القيمة</th>
+                            <th>الملاحظات</th>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td class="text-center text-sm font-semibold text-gray-600 border-b-2 border-gray-200">يومي</td>
+                            <td class="text-center text-sm font-semibold text-gray-600 border-b-2 border-gray-200">شهري</td>
+                            <td></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>عدد العقود المفتوحة</td>
+                            <td><input type="number" class="w-full bg-transparent border-none focus:ring-0 p-0 text-center" value="0" id="contracts-open-daily" oninput="updateCarSummary()"></td>
+                            <td><input type="number" class="w-full bg-transparent border-none focus:ring-0 p-0 text-center" value="0" id="contracts-open-monthly"></td>
+                            <td><input type="text" class="w-full bg-transparent border-none focus:ring-0 p-0" placeholder="اكتب ملاحظات..." id="contracts-open-notes"></td>
+                        </tr>
+                        <tr>
+                            <td>عدد العقود المغلقة</td>
+                            <td><input type="number" class="w-full bg-transparent border-none focus:ring-0 p-0 text-center" value="0" id="contracts-closed-daily"></td>
+                            <td><input type="number" class="w-full bg-transparent border-none focus:ring-0 p-0 text-center" value="0" id="contracts-closed-monthly"></td>
+                            <td><input type="text" class="w-full bg-transparent border-none focus:ring-0 p-0" placeholder="اكتب ملاحظات..." id="contracts-closed-notes"></td>
+                        </tr>
+                        <tr>
+                            <td>عدد العقود المعلقة</td>
+                            <td colspan="2"><input type="number" class="w-full bg-transparent border-none focus:ring-0 p-0 text-center" value="0" id="contracts-pending"></td>
+                            <td><input type="text" class="w-full bg-transparent border-none focus:ring-0 p-0" placeholder="اكتب ملاحظات..." id="contracts-pending-notes"></td>
+                        </tr>
+                        <tr>
+                            <td>إجمالي الإيراد المحصل</td>
+                            <td colspan="2"><input type="number" class="w-full bg-transparent border-none focus:ring-0 p-0 text-center" value="0" id="revenue-collected"></td>
+                            <td><input type="text" class="w-full bg-transparent border-none focus:ring-0 p-0" placeholder="اكتب ملاحظات..." id="revenue-collected-notes"></td>
+                        </tr>
+                        <tr>
+                            <td>عدد العملاء المتأخرين الذين تمت متابعتهم</td>
+                            <td colspan="2"><input type="number" class="w-full bg-transparent border-none focus:ring-0 p-0 text-center" value="0" id="late-customers"></td>
+                            <td><input type="text" class="w-full bg-transparent border-none focus:ring-0 p-0" placeholder="اكتب ملاحظات..." id="late-customers-notes"></td>
+                        </tr>
+                        <tr>
+                            <td>إجمالي المديونية المغلقة</td>
+                            <td colspan="2"><input type="number" class="w-full bg-transparent border-none focus:ring-0 p-0 text-center" value="0" id="closed-debt"></td>
+                            <td><input type="text" class="w-full bg-transparent border-none focus:ring-0 p-0" placeholder="اكتب ملاحظات..." id="closed-debt-notes"></td>
+                        </tr>
+                        <tr> <!-- New row for Accidents -->
+                            <td>حوادث خلال اليوم</td>
+                            <td colspan="2"><input type="number" class="w-full bg-transparent border-none focus:ring-0 p-0 text-center" value="0" id="accidents-count" oninput="updateCarSummary()"></td>
+                            <td><input type="text" class="w-full bg-transparent border-none focus:ring-0 p-0" placeholder="اكتب ملاحظات..." id="accidents-notes"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Visitors and Unavailable Cars Section -->
+        <section class="card">
+            <h2 class="sub-heading">إحصائيات الزوار وطلبات السيارات غير المتوفرة</h2>
+            <div class="mb-4">
+                <label for="visitor-count" class="block text-gray-700 text-sm font-medium mb-2">عدد الزائرين خلال اليوم:</label>
+                <input type="number" id="visitor-count" class="w-full" value="0">
+            </div>
+            <div class="mb-4">
+                <label for="unavailable-cars" class="block text-gray-700 text-sm font-medium mb-2">أنواع السيارات المطلوبة ولم تتوفر اليوم:</label>
+                <textarea id="unavailable-cars" rows="3" class="w-full" placeholder="مثال: تويوتا كورولا، كيا سيراتو"></textarea>
+            </div>
+            <div>
+                <label for="visitor-notes" class="block text-gray-700 text-sm font-medium mb-2">ملاحظات عامة على قسم الزوار والطلبات:</label>
+                <textarea id="visitor-notes" rows="3" class="w-full"></textarea>
+            </div>
+        </section>
+
+        <!-- Electronic Signature Section -->
+        <section class="card">
+            <h2 class="sub-heading">التوقيع الإلكتروني</h2>
+            <div class="flex flex-col items-center">
+                <canvas id="signatureCanvas"></canvas>
+                <div class="flex flex-wrap justify-center gap-4 mt-4">
+                    <button type="button" class="button button-secondary text-sm" onclick="clearSignature()">مسح التوقيع</button>
+                    <!-- Hidden input to store signature data for potential saving/PDF -->
+                    <input type="hidden" id="signatureData" value="">
+                </div>
+            </div>
+        </section>
+
+        <!-- Control Buttons -->
+        <section class="flex flex-wrap justify-center gap-4 mt-8">
+            <button type="button" class="button button-primary" onclick="saveAsPdf()">حفظ النموذج كـ PDF</button>
+            <button type="button" class="button button-primary" onclick="sendReport()">إرسال التقرير</button>
+            <button type="button" class="button button-secondary">مسح النموذج</button>
+        </section>
+    </div>
+
+    <script>
+        // --- Global variables for signature pad ---
+        let canvas, ctx;
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+
+        // --- Core Functions ---
+
+        // Function to format date and time in Gregorian
+        function formatGregorianDateTime(dateObj) {
+            const options = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true,
+                calendar: 'gregory'
+            };
+            return new Intl.DateTimeFormat('ar-SA', options).format(dateObj);
+        }
+
+        // Function to update the report start time display
+        function updateStartTimeDisplay() {
+            const now = new Date();
+            const formattedDateTime = formatGregorianDateTime(now);
+            const startTimeDisplay = document.getElementById('report-start-time');
+            if (startTimeDisplay) {
+                startTimeDisplay.textContent = formattedDateTime;
+            }
+        }
+
+        // Function to set the report end time
+        function setEndTime() {
+            const now = new Date();
+            const formattedDateTime = formatGregorianDateTime(now);
+            const endTimeDisplay = document.getElementById('report-end-time-display');
+            if (endTimeDisplay) {
+                endTimeDisplay.textContent = formattedDateTime;
+            }
+        }
+
+        // Function to display selected file names
+        function displayFileName(input) {
+            const span = input.nextElementSibling;
+            if (input.files && input.files.length > 0) {
+                if (input.files.length === 1) {
+                    span.textContent = input.files[0].name;
+                } else {
+                    span.textContent = `${input.files.length} ملفات مختارة`;
+                }
+            } else {
+                span.textContent = "رفع/تصوير ملف (صور/فيديو)";
+            }
+        }
+
+        // Function to add a new row to the car inventory table
+        function addNewCarRow() {
+            const tableBody = document.querySelector('#carInventoryTable tbody');
+            const newRow = document.createElement('tr');
+            newRow.classList.add('car-row');
+
+            newRow.innerHTML = `
+                <td>
+                    <select class="w-full bg-transparent border-none focus:ring-0 p-0 text-center" onchange="updateCarSummary()">
+                        <option value="">اختر نوع السيارة</option>
+                        <option value="مرسيدس C-Class">مرسيدس C-Class</option>
+                        <option value="تويوتا كامري">تويوتا كامري</option>
+                        <option value="هيونداي إلنترا">هيونداي إلنترا</option>
+                        <option value="فورد موستنج">فورد موستنج</option>
+                        <option value="نيسان صني">نيسان صني</option>
+                        <option value="شفروليه ماليبو">شفروليه ماليبو</option>
+                        <option value="هوندا سيفيك">هوندا سيفيك</option>
+                        <option value="مازدا 3">مازدا 3</option>
+                        <option value="بي ام دبليو الفئة الخامسة">بي ام دبليو الفئة الخامسة</option>
+                    </select>
+                </td>
+                <td><input type="number" class="w-full bg-transparent border-none focus:ring-0 p-0 text-center" placeholder="عداد الكيلو" oninput="updateCarSummary()"></td>
+                <td>
+                    <select class="w-full bg-transparent border-none focus:ring-0 p-0 text-center" onchange="updateCarSummary()">
+                        <option value="">اختر الحالة</option>
+                        <option value="جاهز">جاهز</option>
+                        <option value="رائحة دخان">رائحة دخان</option>
+                        <option value="بها خدوش">بها خدوش</option>
+                        <option value="تحتاج لصيانة">تحتاج لصيانة</option>
+                        <option value="إطار تالف">إطار تالف</option>
+                        <option value="زيت منخفض">زيت منخفض</option>
+                        <option value="نظيفة جداً">نظيفة جداً</option>
+                        <option value="متوسطة النظافة">متوسطة النظافة</option>
+                        <option value="تلف داخلي">تلف داخلي</option>
+                    </select>
+                </td>
+                <td>
+                    <label class="file-input-container">
+                        <input type="file" accept="image/*,video/*" multiple onchange="displayFileName(this)">
+                        <span class="file-input-button">رفع/تصوير ملف (صور/فيديو)</span>
+                    </label>
+                </td>
+                <td><input type="text" class="w-full bg-transparent border-none focus:ring-0 p-0" placeholder="اكتب ملاحظات..."></td>
+            `;
+            tableBody.appendChild(newRow);
+            updateCarSummary();
+        }
+
+        // Functions for signature pad
+        function initSignatureCanvas() {
+            canvas = document.getElementById('signatureCanvas');
+            ctx = canvas.getContext('2d');
+            resizeCanvas();
+            ctx.lineWidth = 2;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#333333';
+            canvas.addEventListener('mousedown', (e) => {
+                isDrawing = true;
+                [lastX, lastY] = [e.offsetX, e.offsetY];
+            });
+            canvas.addEventListener('mousemove', drawSignature);
+            canvas.addEventListener('mouseup', () => isDrawing = false);
+            canvas.addEventListener('mouseout', () => isDrawing = false);
+            canvas.addEventListener('touchstart', (e) => {
+                e.preventDefault(); 
+                isDrawing = true;
+                const touch = e.touches[0];
+                const rect = canvas.getBoundingClientRect();
+                [lastX, lastY] = [touch.clientX - rect.left, touch.clientY - rect.top];
+            }, { passive: false });
+            canvas.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                drawSignature(e.touches[0]);
+            }, { passive: false });
+            canvas.addEventListener('touchend', () => {
+                isDrawing = false;
+                saveSignatureAsBase64();
+            });
+            window.addEventListener('resize', resizeCanvas);
+            clearSignature();
+        }
+
+        function resizeCanvas() {
+            const tempCanvas = document.createElement('canvas');
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            tempCtx.drawImage(canvas, 0, 0);
+
+            const displayWidth = canvas.clientWidth;
+            const displayHeight = 200;
+
+            canvas.width = displayWidth;
+            canvas.height = displayHeight;
+
+            ctx.drawImage(tempCanvas, 0, 0, canvas.width, canvas.height);
+        }
+
+        function drawSignature(e) {
+            if (!isDrawing) return;
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            const rect = canvas.getBoundingClientRect();
+            let currentX, currentY;
+            if (e.clientX && e.clientY) {
+                currentX = e.offsetX;
+                currentY = e.offsetY;
+            } else if (e.targetTouches && e.targetTouches.length > 0) {
+                const touch = e.targetTouches[0];
+                currentX = touch.clientX - rect.left;
+                currentY = touch.clientY - rect.top;
+            } else {
+                 currentX = e.clientX - rect.left;
+                 currentY = e.clientY - rect.top;
+            }
+            ctx.lineTo(currentX, currentY);
+            ctx.stroke();
+            [lastX, lastY] = [currentX, currentY];
+        }
+
+        function clearSignature() {
+            if (ctx) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                document.getElementById('signatureData').value = '';
+            }
+        }
+
+        function saveSignatureAsBase64() {
+            if (canvas && ctx) {
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                let isEmpty = true;
+                for (let i = 0; i < imageData.data.length; i += 4) {
+                    if (imageData.data[i + 3] !== 0) { 
+                        isEmpty = false;
+                        break;
+                    }
+                }
+                
+                if (!isEmpty) {
+                    const dataURL = canvas.toDataURL('image/png');
+                    document.getElementById('signatureData').value = dataURL;
+                } else {
+                    document.getElementById('signatureData').value = '';
+                }
+            }
+        }
+        
+        // Function to update the car summary counts
+        function updateCarSummary() {
+            let rentedCount = parseInt(document.getElementById('contracts-open-daily').value) || 0; 
+            let readyCount = 0;
+            let outOfServiceCount = 0;
+            let totalFleetCount = 0;
+            let accidentsCount = parseInt(document.getElementById('accidents-count').value) || 0; 
+
+            const carRows = document.querySelectorAll('#carInventoryTable tbody tr.car-row');
+            carRows.forEach(row => {
+                totalFleetCount++;
+
+                const statusSelect = row.querySelector('td:nth-child(3) select');
+                const status = statusSelect ? statusSelect.value : '';
+
+                if (status === 'جاهز') { 
+                    readyCount++;
+                } else if (status !== '') {
+                    outOfServiceCount++;
+                }
+            });
+
+            document.getElementById('summary-rented-count-input').value = rentedCount; 
+            document.getElementById('summary-ready-count').textContent = readyCount;
+            document.getElementById('summary-out-of-service-count').textContent = outOfServiceCount;
+            document.getElementById('summary-total-fleet-count').textContent = totalFleetCount;
+            document.getElementById('summary-accidents-count-input').value = accidentsCount;
+        }
+
+        // Initialize car summary and start time on load
+        window.onload = function() {
+            initSignatureCanvas();
+            updateStartTimeDisplay(); // Set start time once on load
+            
+            document.querySelectorAll('#carInventoryTable select, #carInventoryTable input[type="number"]').forEach(element => {
+                element.addEventListener('change', updateCarSummary);
+                element.addEventListener('input', updateCarSummary);
+            });
+            document.getElementById('contracts-open-daily').addEventListener('input', updateCarSummary);
+            document.getElementById('accidents-count').addEventListener('input', updateCarSummary);
+            
+            updateCarSummary();
+        };
+
+
+        // Helper function to create printable static content for PDF
+        function createPrintableContent() {
+            const printableDiv = document.createElement('div');
+            printableDiv.dir = 'rtl';
+            printableDiv.style.fontFamily = 'Inter, sans-serif';
+            printableDiv.style.padding = '1rem';
+            printableDiv.style.backgroundColor = '#ffffff';
+            printableDiv.style.boxSizing = 'border-box';
+            printableDiv.style.width = '100%';
+
+            const getValueById = (id) => {
+                const element = document.getElementById(id);
+                if (element && element.tagName === 'TEXTAREA') {
+                    return element.value.replace(/\n/g, '<br>') || 'لا يوجد';
+                }
+                if (element && element.type === 'number') {
+                    return element.value || '0';
+                }
+                return element ? element.value || 'لا يوجد' : 'لا يوجد';
+            };
+
+            const getSelectTextById = (id) => {
+                const selectElement = document.getElementById(id);
+                return selectElement && selectElement.selectedIndex > -1 && selectElement.options[selectElement.selectedIndex].value !== ''
+                       ? selectElement.options[selectElement.selectedIndex].textContent
+                       : 'لم يتم الاختيار';
+            };
+
+            const getCheckboxPrintText = (inputElement) => {
+                if (inputElement) {
+                    return inputElement.checked ? inputElement.dataset.staticText : inputElement.dataset.staticUnchecked;
+                }
+                return '';
+            };
+
+            const getRadioPrintValue = (name) => {
+                const radio = document.querySelector(`input[name="${name}"]:checked`);
+                return radio ? radio.value : 'لم يتم الاختيار';
+            };
+
+            // --- Header Section ---
+            printableDiv.innerHTML += `
+                <h1 style="font-size: 2.2rem; font-weight: 700; color: #80276C; text-align: center; margin-bottom: 1.5rem;">نموذج تشييك المؤجرين اليومي</h1>
+            `;
+
+            // --- Date and Time Display Section ---
+            printableDiv.innerHTML += `
+                <div style="text-align: center; margin-bottom: 2rem; border: 1px solid #e5e7eb; padding: 1rem; border-radius: 0.5rem; background-color: #f9fafb;">
+                    <h2 style="font-size: 1.25rem; font-weight: 600; color: #A51890; border-bottom: 2px solid #BB16A3; padding-bottom: 0.5rem; display: inline-block; margin-bottom: 0.5rem;">تاريخ ووقت التقرير</h2>
+                    <div style="font-size: 1.1rem; font-weight: 700; color: #1f2937; margin-top: 0.5rem;">
+                        <p><strong>وقت وتاريخ بداية التقرير:</strong> ${document.getElementById('report-start-time').textContent}</p>
+                        <p><strong>وقت وتاريخ انتهاء التقرير:</strong> ${document.getElementById('report-end-time-display').textContent || 'لم يتم التسجيل'}</p>
+                    </div>
+                </div>
+            `;
+
+            // --- Employee and Branch Data Section ---
+            printableDiv.innerHTML += `
+                <section style="background-color: #ffffff; border-radius: 1rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08); padding: 1.5rem; margin-bottom: 2rem;">
+                    <h2 style="font-size: 1.25rem; font-weight: 600; color: #A51890; border-bottom: 2px solid #BB16A3; padding-bottom: 0.5rem; margin-bottom: 1rem;">بيانات الموظف والفرع</h2>
+                    <div style="font-size: 1rem; color: #4b5563; line-height: 1.8;">
+                        <p><strong>الرقم الوظيفي:</strong> ${getValueById('employee-id')}</p>
+                        <p><strong>اسم الموظف:</strong> ${getValueById('employee-name-input')}</p>
+                        <p><strong>اسم الفرع:</strong> ${getValueById('branch-name-input')}</p>
+                        <p><strong>البريد الإلكتروني:</strong> ${getValueById('employee-email')}</p>
+                    </div>
+                </section>
+            `;
+
+            // --- Branch Cleanliness Section ---
+            let branchCleanlinessHtml = `
+                <section style="background-color: #ffffff; border-radius: 1rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08); padding: 1.5rem; margin-bottom: 2rem;">
+                    <h2 style="font-size: 1.25rem; font-weight: 600; color: #A51890; border-bottom: 2px solid #BB16A3; padding-bottom: 0.5rem; margin-bottom: 1rem;">نظافة الفرع والمرافق (التشييك على مهام العامل اليومية)</h2>
+                    <div style="font-size: 1rem; color: #4b5563; line-height: 1.8; margin-bottom: 1.5rem;">
+            `;
+            document.querySelectorAll('#branch-cleanliness-section .checkbox-item input[type="checkbox"]').forEach(checkbox => {
+                branchCleanlinessHtml += `<p>${getCheckboxPrintText(checkbox)}</p>`;
+            });
+            branchCleanlinessHtml += `
+                    </div>
+                    <div style="margin-bottom: 1.5rem;">
+                        <p><strong>ملاحظات عامة على الفرع:</strong> ${getValueById('branch-overall-notes')}</p>
+                    </div>
+                </section>
+            `;
+            printableDiv.innerHTML += branchCleanlinessHtml;
+
+
+            // --- Car Cleanliness Section ---
+            let carCleanlinessHtml = `
+                <section style="background-color: #ffffff; border-radius: 1rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08); padding: 1.5rem; margin-bottom: 2rem;">
+                    <h2 style="font-size: 1.25rem; font-weight: 600; color: #A51890; border-bottom: 2px solid #BB16A3; padding-bottom: 0.5rem; margin-bottom: 1rem;">تشييك نظافة السيارة (التشييك على نظافة السيارات)</h2>
+                    <div style="font-size: 1rem; color: #4b5563; line-height: 1.8; margin-bottom: 1.5rem;">
+                        <h3 style="font-size: 1.1rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">نظافة السيارة (الداخل والخارج):</h3>
+            `;
+            document.querySelectorAll('#car-cleanliness-section > div:first-of-type .checkbox-item input[type="checkbox"]').forEach(checkbox => {
+                carCleanlinessHtml += `<p>${getCheckboxPrintText(checkbox)}</p>`;
+            });
+            carCleanlinessHtml += `
+                        <h3 style="font-size: 1.1rem; font-weight: 600; color: #374151; margin-top: 1rem; margin-bottom: 0.5rem;">العدة الأساسية:</h3>
+            `;
+            document.querySelectorAll('#car-cleanliness-section > div:last-of-type .checkbox-item input[type="checkbox"]').forEach(checkbox => {
+                carCleanlinessHtml += `<p>${getCheckboxPrintText(checkbox)}</p>`;
+            });
+            carCleanlinessHtml += `
+                        <p><strong>ملاحظات على نظافة السيارة:</strong> ${getValueById('car-notes')}</p>
+                    </div>
+                </section>
+            `;
+            printableDiv.innerHTML += carCleanlinessHtml;
+
+
+            // --- Worker Performance Section ---
+            let workerPerformanceHtml = `
+                <section style="background-color: #ffffff; border-radius: 1rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08); padding: 1.5rem; margin-bottom: 2rem;">
+                    <h2 style="font-size: 1.25rem; font-weight: 600; color: #A51890; border-bottom: 2px solid #BB16A3; padding-bottom: 0.5rem; margin-bottom: 1rem;">تقييم أداء العاملين</h2>
+                    <div style="background-color: #f9fafb; padding: 1rem; border-radius: 0.75rem; margin-bottom: 1rem;">
+                        <h4 style="font-size: 1rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">أداء العامل (العمال)</h4>
+                        <p><strong>اسم العامل:</strong> ${getValueById('worker-name-input')}</p>
+                        <p><strong>الالتزام بالزي:</strong> ${getRadioPrintValue('worker-uniform')}</p>
+                        <p><strong>التقييم اليومي:</strong> ${getSelectTextById('worker-performance-eval')}</p>
+                        <p><strong>ملاحظات:</strong> ${getValueById('worker-notes')}</p>
+                    </div>
+                </section>
+            `;
+            printableDiv.innerHTML += workerPerformanceHtml;
+
+
+            // --- Car Summary Section for PDF ---
+            const rentedCount = getValueById('summary-rented-count-input');
+            const readyCount = document.getElementById('summary-ready-count').textContent;
+            const outOfServiceCount = document.getElementById('summary-out-of-service-count').textContent;
+            const totalFleetCount = document.getElementById('summary-total-fleet-count').textContent;
+            const accidentsCount = getValueById('summary-accidents-count-input');
+            printableDiv.innerHTML += `
+                <section style="background-color: #ffffff; border-radius: 1rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08); padding: 1.5rem; margin-bottom: 2rem;">
+                    <h2 style="font-size: 1.25rem; font-weight: 600; color: #A51890; border-bottom: 2px solid #BB16A3; padding-bottom: 0.5rem; margin-bottom: 1rem; text-align: center;">ملخص عدد السيارات بالفرع</h2>
+                    <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 1rem;">
+                        <div style="padding: 0.8rem; background-color: #f3f4f6; border-radius: 0.5rem; flex: 1; min-width: 150px; text-align: center;">
+                            <p style="color: #4b5563; font-weight: 600; font-size: 1rem;">الأسطول</p>
+                            <p style="font-size: 1.5rem; font-weight: 700; color: #1f2937; margin-top: 0.25rem;">${totalFleetCount}</p>
+                        </div>
+                        <div style="padding: 0.8rem; background-color: #e0f2fe; border-radius: 0.5rem; flex: 1; min-width: 150px; text-align: center;">
+                            <p style="color: #0369a1; font-weight: 600; font-size: 1rem;">مؤجر</p>
+                            <p style="font-size: 1.5rem; font-weight: 700; color: #075985; margin-top: 0.25rem;">${rentedCount}</p>
+                        </div>
+                        <div style="padding: 0.8rem; background-color: #d1fae5; border-radius: 0.5rem; flex: 1; min-width: 150px; text-align: center;">
+                            <p style="color: #065f46; font-weight: 600; font-size: 1rem;">جاهز</p>
+                            <p style="font-size: 1.5rem; font-weight: 700; color: #047857; margin-top: 0.25rem;">${readyCount}</p>
+                        </div>
+                        <div style="padding: 0.8rem; background-color: #fee2e2; border-radius: 0.5rem; flex: 1; min-width: 150px; text-align: center;">
+                            <p style="color: #991b1b; font-weight: 600; font-size: 1rem;">خارج الخدمة بالفرع</p>
+                            <p style="font-size: 1.5rem; font-weight: 700; color: #c53030; margin-top: 0.25rem;">${outOfServiceCount}</p>
+                        </div>
+                        <div style="padding: 0.8rem; background-color: #fffbeb; border-radius: 0.5rem; flex: 1; min-width: 150px; text-align: center;">
+                            <p style="color: #92400e; font-weight: 600; font-size: 1rem;">حوادث خلال اليوم</p>
+                            <p style="font-size: 1.5rem; font-weight: 700; color: #b45309; margin-top: 0.25rem;">${accidentsCount}</p>
+                        </div>
+                    </div>
+                </section>
+            `;
+
+
+            // --- Fleet Inventory and Readiness Section ---
+            let fleetInventoryHtml = `
+                <section style="background-color: #ffffff; border-radius: 1rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08); padding: 1.5rem; margin-bottom: 2rem;">
+                    <h2 style="font-size: 1.25rem; font-weight: 600; color: #A51890; border-bottom: 2px solid #BB16A3; padding-bottom: 0.5rem; margin-bottom: 1rem;">جرد وجاهزية السيارات بالفرع</h2>
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 1.5rem;">
+                        <thead style="background-color: #BB16A3; color: #FFFFFF;">
+                            <tr>
+                                <th style="padding: 0.75rem; border: 1px solid #A51890;">نوع السيارة</th>
+                                <th style="padding: 0.75rem; border: 1px solid #A51890;">عداد الكيلو</th>
+                                <th style="padding: 0.75rem; border: 1px solid #A51890;">حالة السيارة</th>
+                                <th style="padding: 0.75rem; border: 1px solid #A51890;">ملفات مرفقة</th>
+                                <th style="padding: 0.75rem; border: 1px solid #A51890;">ملاحظات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            const carInventoryTable = document.getElementById('carInventoryTable');
+            Array.from(carInventoryTable.querySelectorAll('tbody tr.car-row')).forEach(row => {
+                const typeSelect = row.querySelector('td:nth-child(1) select');
+                const type = typeSelect ? (typeSelect.selectedIndex > -1 && typeSelect.options[typeSelect.selectedIndex].value !== '' ? typeSelect.options[typeSelect.selectedIndex].textContent : 'لم يتم الاختيار') : 'خطأ';
+                const odometer = row.querySelector('td:nth-child(2) input').value || '0';
+                const statusSelect = row.querySelector('td:nth-child(3) select');
+                const status = statusSelect ? (statusSelect.selectedIndex > -1 && statusSelect.options[statusSelect.selectedIndex].value !== '' ? statusSelect.options[statusSelect.selectedIndex].textContent : 'لم يتم الاختيار') : 'خطأ';
+                const files = row.querySelector('td:nth-child(4) .file-input-button').textContent || 'لا يوجد ملفات';
+                const notes = row.querySelector('td:nth-child(5) input').value || 'لا يوجد';
+                fleetInventoryHtml += `
+                            <tr>
+                                <td style="padding: 0.75rem; border: 1px solid #e5e7eb;">${type}</td>
+                                <td style="padding: 0.75rem; border: 1px solid #e5e7eb;">${odometer}</td>
+                                <td style="padding: 0.75rem; border: 1px solid #e5e7eb;">${status}</td>
+                                <td style="padding: 0.75rem; border: 1px solid #e5e7eb;">${files}</td>
+                                <td style="padding: 0.75rem; border: 1px solid #e5e7eb;">${notes}</td>
+                            </tr>
+                `;
+            });
+            fleetInventoryHtml += `
+                        </tbody>
+                    </table>
+                </section>
+            `;
+            printableDiv.innerHTML += fleetInventoryHtml;
+
+
+            // --- Contracts and Revenue Section ---
+            let contractsRevenueHtml = `
+                <section style="background-color: #ffffff; border-radius: 1rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08); padding: 1.5rem; margin-bottom: 2rem;">
+                    <h2 style="font-size: 1.25rem; font-weight: 600; color: #A51890; border-bottom: 2px solid #BB16A3; padding-bottom: 0.5rem; margin-bottom: 1rem;">البيانات المالية والتشغيلية اليومية</h2>
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 1.5rem;">
+                        <thead style="background-color: #BB16A3; color: #FFFFFF;">
+                            <tr>
+                                <th style="padding: 0.75rem; border: 1px solid #A51890;">البيان</th>
+                                <th style="padding: 0.75rem; border: 1px solid #A51890;">يومي</th>
+                                <th style="padding: 0.75rem; border: 1px solid #A51890;">شهري</th>
+                                <th style="padding: 0.75rem; border: 1px solid #A51890;">الملاحظات</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td style="padding: 0.75rem; border: 1px solid #e5e7eb;">عدد العقود المفتوحة</td>
+                            <td style="padding: 0.75rem; border: 1px solid #e5e7eb;">${getValueById('contracts-open-daily')}</td>
+                            <td style="padding: 0.75rem; border: 1px solid #e5e7eb;">${getValueById('contracts-open-monthly')}</td>
+                            <td style="padding: 0.75rem; border: 1px solid #e5e7eb;">${getValueById('contracts-open-notes')}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0.75rem; border: 1px solid #e5e7eb;">عدد العقود المغلقة</td>
+                            <td style="padding: 0.75rem; border: 1px solid #e5e7eb;">${getValueById('contracts-closed-daily')}</td>
+                            <td style="padding: 0.75rem; border: 1px solid #e5e7eb;">${getValueById('contracts-closed-monthly')}</td>
+                            <td style="padding: 0.75rem; border: 1px solid #e5e7eb;">${getValueById('contracts-closed-notes')}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0.75rem; border: 1px solid #e5e7eb;">عدد العقود المعلقة</td>
+                            <td colspan="2" style="padding: 0.75rem; border: 1px solid #e5e7eb;">${getValueById('contracts-pending')}</td>
+                            <td style="padding: 0.75rem; border: 1px solid #e5e7eb;">${getValueById('contracts-pending-notes')}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0.75rem; border: 1px solid #e5e7eb;">إجمالي الإيراد المحصل</td>
+                            <td colspan="2" style="padding: 0.75rem; border: 1px solid #e5e7eb;">${getValueById('revenue-collected')}</td>
+                            <td style="padding: 0.75rem; border: 1px solid #e5e7eb;">${getValueById('revenue-collected-notes')}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0.75rem; border: 1px solid #e5e7eb;">عدد العملاء المتأخرين الذين تمت متابعتهم</td>
+                            <td colspan="2" style="padding: 0.75rem; border: 1px solid #e5e7eb;">${getValueById('late-customers')}</td>
+                            <td style="padding: 0.75rem; border: 1px solid #e5e7eb;">${getValueById('late-customers-notes')}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0.75rem; border: 1px solid #e5e7eb;">إجمالي المديونية المغلقة</td>
+                            <td colspan="2" style="padding: 0.75rem; border: 1px solid #e5e7eb;">${getValueById('closed-debt')}</td>
+                            <td style="padding: 0.75rem; border: 1px solid #e5e7eb;">${getValueById('closed-debt-notes')}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 0.75rem; border: 1px solid #e5e7eb;">حوادث خلال اليوم</td>
+                            <td colspan="2" style="padding: 0.75rem; border: 1px solid #e5e7eb;">${getValueById('accidents-count')}</td>
+                            <td style="padding: 0.75rem; border: 1px solid #e5e7eb;">${getValueById('accidents-notes') || 'لا يوجد'}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </section>
+            `;
+            printableDiv.innerHTML += contractsRevenueHtml;
+
+
+            // --- Visitors and Unavailable Cars Section ---
+            printableDiv.innerHTML += `
+                <section style="background-color: #ffffff; border-radius: 1rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08); padding: 1.5rem; margin-bottom: 2rem;">
+                    <h2 style="font-size: 1.25rem; font-weight: 600; color: #A51890; border-bottom: 2px solid #BB16A3; padding-bottom: 0.5rem; margin-bottom: 1rem;">إحصائيات الزوار وطلبات السيارات غير المتوفرة</h2>
+                    <div style="font-size: 1rem; color: #4b5563; line-height: 1.8;">
+                        <p><strong>عدد الزائرين خلال اليوم:</strong> ${getValueById('visitor-count')}</p>
+                        <p><strong>أنواع السيارات المطلوبة ولم تتوفر اليوم:</strong> ${getValueById('unavailable-cars')}</p>
+                        <p><strong>ملاحظات عامة على قسم الزوار والطلبات:</strong> ${getValueById('visitor-notes')}</p>
+                    </div>
+                </section>
+            `;
+
+            // --- Electronic Signature Section for PDF ---
+            const signatureData = document.getElementById('signatureData').value;
+            if (signatureData) {
+                printableDiv.innerHTML += `
+                    <section style="background-color: #ffffff; border-radius: 1rem; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08); padding: 1.5rem; margin-bottom: 2rem; text-align: center;">
+                        <h2 style="font-size: 1.25rem; font-weight: 600; color: #A51890; border-bottom: 2px solid #BB16A3; padding-bottom: 0.5rem; margin-bottom: 1rem;">التوقيع الإلكتروني</h2>
+                        <img src="${signatureData}" style="max-width: 100%; height: auto; border: 1px solid #ccc; border-radius: 0.5rem; display: block; margin: 0 auto;" alt="التوقيع الإلكتروني">
+                    </section>
+                `;
+            }
+
+            return printableDiv;
+        }
+
+        // Function to save the form content as a PDF
+        function saveAsPdf() {
+            // Save current signature to base64 before PDF generation
+            saveSignatureAsBase64(); 
+
+            const printableElement = createPrintableContent(); // Get the dynamically created printable content
+
+            // Create a temporary hidden container to render the printable content
+            const tempContainer = document.createElement('div');
+            tempContainer.style.position = 'absolute';
+            tempContainer.style.left = '-9999px'; // Move off-screen
+            tempContainer.style.width = '210mm'; // A4 width
+            tempContainer.style.height = '297mm'; // A4 height, though html2pdf handles pagination
+            tempContainer.style.padding = '10mm'; // Add some print margins
+            tempContainer.style.backgroundColor = '#ffffff'; // Ensure white background for PDF
+            tempContainer.style.overflow = 'hidden'; // Hide overflow
+
+            tempContainer.appendChild(printableElement);
+            document.body.appendChild(tempContainer); // Append to body to be rendered by html2canvas
+
+            // Options for PDF generation
+            const opt = {
+                margin:       10, // General margin in mm
+                filename:     'نموذج_تشييك_المؤجرين.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, logging: true, dpi: 192, letterRendering: true, useCORS: true, scrollY: 0, scrollX: 0, windowWidth: tempContainer.scrollWidth, windowHeight: tempContainer.scrollHeight },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            // Generate PDF from the temporary container
+            html2pdf().set(opt).from(tempContainer).save().then(() => {
+                // Clean up: remove the temporary container from the DOM
+                tempContainer.remove();
+            }).catch(error => {
+                console.error("PDF generation failed:", error);
+                alert("فشل إنشاء ملف PDF. يرجى التحقق من وحدة التحكم (Console) لمزيد من التفاصيل.");
+                tempContainer.remove(); // Ensure removal even on error
+            });
+        }
+
+        // Function to send report via email client
+        function sendReport() {
+            const recipientEmail = 'your_email@example.com'; // **CHANGE THIS TO THE DESIRED RECIPIENT EMAIL**
+            const subject = encodeURIComponent('تقرير تشييك المؤجرين اليومي');
+            const body = encodeURIComponent(
+                'مرفق تقرير تشييك المؤجرين اليومي. يرجى مراجعته.\n\n' +
+                'ملاحظة: الرجاء إرفاق ملف PDF المحفوظ يدوياً من جهازك.'
+            );
+            
+            // Construct the mailto link
+            const mailtoLink = `mailto:${recipientEmail}?subject=${subject}&body=${body}`;
+            
+            // Open the default email client
+            window.location.href = mailtoLink;
+        }
+    </script>
+</body>
+</html>
